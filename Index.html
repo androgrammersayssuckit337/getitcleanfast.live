@@ -1,0 +1,133 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get It Clean Quick</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+body { margin:0; font-family:'Inter',sans-serif; background:#06131a; color:white; overflow-x:hidden; }
+header { text-align:center; padding:60px 20px 20px; }
+h1 { font-size:3rem; }
+p.tagline::before { content:"🧤 "; }
+p.tagline::after { content:" 🧹"; }
+.container { max-width:600px; margin:auto; background:rgba(255,255,255,0.05); border-radius:20px; padding:30px; backdrop-filter:blur(10px); }
+form { display:flex; flex-direction:column; gap:12px; }
+input, textarea, select { padding:12px; border-radius:10px; border:none; background:#0d2a35; color:white; }
+button { padding:14px; border-radius:12px; border:none; background:linear-gradient(45deg,#00c6ff,#0072ff); color:white; font-weight:bold; cursor:pointer; }
+canvas { position:fixed; top:0; left:0; z-index:-1; }
+.price { font-weight:bold; margin-top:10px; }
+.contact { text-align:center; margin-top:40px; font-size:1.4rem; font-weight:600; }
+.contact a { color:#00c6ff; text-decoration:none; display:block; margin:8px 0; }
+.guide { max-width:700px; margin:50px auto; padding:25px; background:rgba(0,0,0,0.4); border-radius:15px; }
+.guide h3 { margin-top:0; }
+.guide li { margin:8px 0; }
+</style>
+</head>
+<body><canvas id="bg"></canvas>
+
+<header>
+<h1>Get It Clean Quick</h1>
+<p class="tagline">Fast, Affordable House Cleaning</p>
+<p style="margin-top:10px; opacity:0.85;">Owned & Operated by Allison Hancock & Tina Breaux</p>
+</header><section>
+<div class="container">
+<h2>Book Your Cleaning</h2>
+<form id="form">
+<input type="text" id="name" placeholder="Full Name" required>
+<input type="email" id="email" placeholder="Email" required>
+<input type="tel" id="phone" placeholder="Phone" required>
+<input type="text" id="address" placeholder="Address" required><select id="service" required>
+<option value="">Service Type</option>
+<option value="80">Standard ($80)</option>
+<option value="150">Deep Clean ($150)</option>
+<option value="200">Move Out ($200)</option>
+</select><select id="size" required>
+<option value="">Home Size</option>
+<option value="1">Small</option>
+<option value="1.5">Medium</option>
+<option value="2">Large</option>
+</select><div class="price" id="price">Estimated: $0</div>
+<textarea id="notes" placeholder="Notes"></textarea>
+<button type="submit">Submit</button>
+</form>
+</div><div class="contact">
+<a href="mailto:gettingitcleanquick@gmail.com">📧 gettingitcleanquick@gmail.com</a>
+<a href="tel:13372461289">📞 (337) 246-1289</a>
+<a href="tel:13372030303">📞 (337) 203-0303</a>
+</div><div class="guide">
+<h3>🚀 How to Connect Your Domain (getitcleanfast.live)</h3>
+<ol>
+<li>Go to Netlify and drag this file to deploy your site</li>
+<li>Copy your Netlify site URL (example: yoursite.netlify.app)</li>
+<li>Login to Namecheap → Domain List → Manage → Advanced DNS</li>
+<li>Add this A Record:<br>Host: @ → Value: 75.2.60.5</li>
+<li>Add this CNAME:<br>Host: www → Value: yoursite.netlify.app</li>
+<li>Go back to Netlify → Domain Settings → Add Custom Domain</li>
+<li>Enter: getitcleanfast.live</li>
+<li>Wait up to 24 hours for DNS to fully connect</li>
+</ol>
+</div></section><script>
+const canvas=document.getElementById('bg');
+const ctx=canvas.getContext('2d');
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+
+let bubbles=Array.from({length:110},()=>({
+ x:Math.random()*canvas.width,
+ y:Math.random()*canvas.height,
+ r:Math.random()*8+3,
+ s:Math.random()*1.4+0.4
+}));
+
+canvas.addEventListener('click',e=>{
+ bubbles=bubbles.filter(b=>{
+  const dx=b.x-e.clientX;
+  const dy=b.y-e.clientY;
+  return Math.sqrt(dx*dx+dy*dy)>b.r+5;
+ });
+});
+
+function draw(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ bubbles.forEach(b=>{
+  const g=ctx.createRadialGradient(b.x,b.y,1,b.x,b.y,b.r);
+  g.addColorStop(0,'rgba(255,255,255,0.8)');
+  g.addColorStop(1,'rgba(173,216,230,0.05)');
+  ctx.fillStyle=g;
+  ctx.beginPath();
+  ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.fillStyle='rgba(255,255,255,0.3)';
+  ctx.arc(b.x-b.r/3,b.y-b.r/3,b.r/5,0,Math.PI*2);
+  ctx.fill();
+
+  b.y-=b.s;
+  if(b.y<0){b.y=canvas.height;b.x=Math.random()*canvas.width;}
+ });
+ requestAnimationFrame(draw);
+}
+
+draw();
+
+const service=document.getElementById('service');
+const size=document.getElementById('size');
+const price=document.getElementById('price');
+
+function calc(){
+ const s=parseFloat(service.value||0);
+ const m=parseFloat(size.value||0);
+ price.textContent='Estimated: $'+(s*m||0);
+}
+service.onchange=calc;
+size.onchange=calc;
+
+document.getElementById('form').onsubmit=e=>{
+ e.preventDefault();
+ const subject=encodeURIComponent('New Cleaning Request');
+ const body=encodeURIComponent(document.getElementById('name').value);
+ window.location.href=`mailto:gettingitcleanquick@gmail.com?subject=${subject}&body=${body}`;
+};
+</script></body>
+</html>
